@@ -1,0 +1,201 @@
+.game-shell {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 32px 24px 40px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 24px;
+}
+
+.hero-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.eyebrow {
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  color: var(--accent-2);
+}
+
+.subtitle {
+  max-width: 42ch;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.status-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: rgba(7, 10, 20, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+
+  @media (max-width: 800px) {
+    grid-template-columns: auto 1fr;
+  }
+}
+
+.status-label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.status-message {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.turn-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.06);
+
+  &.red {
+    background: linear-gradient(180deg, #ff6a5b 0%, #d7263d 100%);
+  }
+
+  &.yellow {
+    background: linear-gradient(180deg, #ffe66d 0%, #f59e0b 100%);
+  }
+
+  &.idle {
+    background: linear-gradient(180deg, #cbd5e1 0%, #64748b 100%);
+  }
+}
+
+.reset-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-strong);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08));
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-2);
+    outline-offset: 3px;
+  }
+}
+
+.board-card {
+  padding: 22px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(12, 16, 30, 0.92), rgba(7, 10, 20, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.board-header {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.drop-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--text-strong);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, opacity 160ms ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-2);
+    outline-offset: 3px;
+  }
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  aspect-ratio: 7 / 6;
+}
+
+.cell {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03) 52%, rgba(255, 255, 255, 0.06) 53%, rgba(0, 0, 0, 0.25) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.disc {
+  position: absolute;
+  inset: 11%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 -10px 18px rgba(0, 0, 0, 0.18);
+}
+
+.cell.red .disc {
+  background: radial-gradient(circle at 35% 30%, #ff9a8f 0%, #ff5d52 32%, #db223d 78%, #8e1028 100%);
+}
+
+.cell.yellow .disc {
+  background: radial-gradient(circle at 35% 30%, #fff2a8 0%, #ffd84d 34%, #f59e0b 78%, #a85b00 100%);
+}
+
+.cell.empty .disc {
+  opacity: 0.2;
+}
+
+@media (max-width: 800px) {
+  .game-shell {
+    padding: 20px 14px 28px;
+    gap: 18px;
+  }
+
+  .board-card {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .board-header,
+  .board-grid {
+    gap: 8px;
+  }
+}

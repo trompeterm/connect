@@ -1,0 +1,80 @@
+:root {
+  --text: #bfcae2;
+  --text-strong: #f8fbff;
+  --text-muted: #91a0be;
+  --accent-2: #8b5cf6;
+  --shadow: rgba(3, 7, 18, 0.45) 0 24px 64px -24px;
+
+  --sans: Inter, 'Segoe UI', system-ui, sans-serif;
+  --heading: Inter, 'Segoe UI', system-ui, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  font: 18px/1.5 var(--sans);
+  letter-spacing: 0.16px;
+  color-scheme: dark;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(139, 92, 246, 0.3), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.22), transparent 30%),
+    linear-gradient(180deg, #060816 0%, #090d1a 52%, #05070f 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: inherit;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+h1 {
+  font-size: clamp(2.2rem, 5vw, 4.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  margin: 0 0 14px;
+  @media (max-width: 1024px) {
+    margin: 0 0 12px;
+  }
+}
+h2 {
+  font-size: 24px;
+  margin: 0 0 8px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+p {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
