@@ -115,7 +115,7 @@ for epoch in range(NUM_EPOCHS):
         f"epoch: {epoch + 1}\n", 
         f"train_loss: {train_loss:.4f}\n",
         f"val_loss: {val_loss:.4f}\n",
-        f"accuracy: {accuracy:.4f}\n"
+        f"accuracy: {accuracy:.4f}\n", flush=True
     )
 
     if val_loss < best_val_loss:

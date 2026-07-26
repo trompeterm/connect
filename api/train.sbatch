@@ -9,5 +9,5 @@
 uv run train.py \
     --model cnn \
     --epochs 20 \
-    --batch_size 64 \
+    --batch_size 512 \
     --learning_rate 0.001 \
