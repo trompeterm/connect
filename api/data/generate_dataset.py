@@ -1,59 +1,22 @@
 import argparse
-import random
 import torch
-
-from game import Connect4
+import random
+from game.board import Connect4
+from game.players import RandomHeuristicPlayer, AlphaBetaPlayer
 
 
 def canonical_board(game):
-    """
-    Always represent the board from the CURRENT player's perspective.
-    """
     player = game.current_player
 
-    board = [
+    return [
         [cell * player for cell in row]
         for row in game.board
     ]
 
-    return board
-
-
-def winning_move(game, player):
-    """
-    Returns a winning column for player if one exists.
-    """
-
-    for move in game.legal_moves():
-        g = game.copy()
-        g.current_player = player
-        g.play(move)
-
-        if g.winner() == player:
-            return move
-
-    return None
-
-
-def choose_move(game):
-    player = game.current_player
-    opponent = -player
-
-    # Immediate win
-    move = winning_move(game, player)
-    if move is not None:
-        return move
-
-    # Block opponent
-    move = winning_move(game, opponent)
-    if move is not None:
-        return move
-
-    # Random
-    return random.choice(game.legal_moves())
-
 
 def generate(num_games):
+
+    player = AlphaBetaPlayer()
 
     dataset = []
 
@@ -61,24 +24,23 @@ def generate(num_games):
 
         game = Connect4()
 
-        while True:
-
-            if game.winner() != 0:
-                break
-
-            if game.is_full():
-                break
+        while not game.is_full() and game.winner() == 0:
 
             board = canonical_board(game)
+            scored_moves = player.score_moves(game)
+            best_score = max(score for _, score in scored_moves)
+            candidate_moves = [
+                move
+                for move, score in scored_moves
+                if score >= best_score - 10
+            ]
 
-            move = choose_move(game)
+            move = random.choice(candidate_moves)
 
-            dataset.append(
-                {
-                    "board": board,
-                    "move": move,
-                }
-            )
+            dataset.append({
+                "board": board,
+                "move": move,
+            })
 
             game.play(move)
 
@@ -89,6 +51,7 @@ def generate(num_games):
 
 
 def main():
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--games", type=int, default=5000)
 
@@ -98,7 +61,6 @@ def main():
 
     torch.save(dataset, "data/connect4_dataset.pt")
 
-    print()
     print(f"Saved {len(dataset)} positions.")
 
 

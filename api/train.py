@@ -1,41 +1,86 @@
-import tqdm
-
-# Load dataset
+import argparse
+import random
+import numpy as np
 import torch
 
-from data.dataset import Connect4Dataset
-from torch.utils.data import random_split
+from torch import nn, optim
+from torch.utils.data import DataLoader, random_split
 
-dataset = Connect4Dataset("data/connect4_dataset.pt")
+from data.dataset import Connect4Dataset
+from data.transforms import FlattenBoard, CNNBoard
+from models import get_model
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        required=True
+    )
+
+    parser.add_argument(
+        "--epochs",
+        type=int,
+    )
+
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+    )
+
+    parser.add_argument(
+        "--learning_rate",
+        type=float,
+    )
+
+    return parser.parse_args()
+
+args = parse_args()
+
+NUM_EPOCHS = args.epochs
+BATCH_SIZE = args.batch_size
+LEARNING_RATE = args.learning_rate
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model_name = args.model.lower()
+if model_name == "mlp":
+    transform = FlattenBoard()
+elif model_name == "cnn":
+    transform = CNNBoard()
+else:
+    raise ValueError("Invalid model name")
+
+dataset = Connect4Dataset("data/connect4_dataset.pt", transform=transform)
 train_size = int(0.8 * len(dataset))
 val_size = len(dataset) - train_size
 
 train, val = random_split(dataset, [train_size, val_size])
 
-# Create DataLoaders
-from torch.utils.data import DataLoader
 
-train_loader = DataLoader(train, batch_size=64, shuffle=True)
-val_loader = DataLoader(val, batch_size=64, shuffle=False)
-
+train_loader = DataLoader(train, batch_size=BATCH_SIZE, shuffle=True)
+val_loader = DataLoader(val, batch_size=BATCH_SIZE, shuffle=False)
 
 # Create model
-from models.mlp import Connect4MLP
-model = Connect4MLP()
+model = get_model(model_name).to(device)
 
 # Create optimizer
-from torch import optim
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
 # Create loss function
-from torch import nn
 criterion = nn.CrossEntropyLoss()
 
-for epoch in tqdm.tqdm(range(10)):
+best_val_loss = float("inf")
+
+for epoch in range(NUM_EPOCHS):
     model.train()
     running_loss = 0.0
 
     for boards, moves in train_loader:
+        boards = boards.to(device)
+        moves = moves.to(device)
+
         optimizer.zero_grad()
         outputs = model(boards)
         loss = criterion(outputs, moves)
@@ -51,6 +96,9 @@ for epoch in tqdm.tqdm(range(10)):
 
     with torch.no_grad():
         for boards, moves in val_loader:
+            boards = boards.to(device)
+            moves = moves.to(device)
+
             outputs = model(boards)
             loss = criterion(outputs, moves)
             val_loss += loss.item()
@@ -70,9 +118,9 @@ for epoch in tqdm.tqdm(range(10)):
         f"accuracy: {accuracy:.4f}\n"
     )
 
-    torch.save(model.state_dict(), "models/mlp.pt")
-    # Training loop
-
-    # Validation loop
-
-    # Print loss and accuracy
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        torch.save(
+            model.state_dict(),
+            "models/best.pt"
+        )

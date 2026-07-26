@@ -13,23 +13,23 @@ class Connect4:
         self.board = [[0 for _ in range(COLS)] for _ in range(ROWS)]
         self.current_player = self.PLAYER1
 
-    def copy(self):
-        return copy.deepcopy(self)
-
     def legal_moves(self):
         return [c for c in range(COLS) if self.board[0][c] == 0]
 
-    def play(self, col):
-        if col not in self.legal_moves():
-            return False
-
+    def make_move(self, col):
         for row in range(ROWS - 1, -1, -1):
-            if self.board[row][col] == 0:
+            if self.board[row][col] == self.EMPTY:
                 self.board[row][col] = self.current_player
                 self.current_player *= -1
-                return True
+                return row
+        return None
 
-        return False
+    def undo_move(self, row, col):
+        self.current_player *= -1
+        self.board[row][col] = self.EMPTY
+
+    def play(self, col):
+        return self.make_move(col) is not None
 
     def is_full(self):
         return len(self.legal_moves()) == 0

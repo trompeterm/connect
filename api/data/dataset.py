@@ -3,20 +3,30 @@ from torch.utils.data import Dataset
 
 
 class Connect4Dataset(Dataset):
-    def __init__(self, path):
+
+    def __init__(self, path, transform=None):
+
         self.data = torch.load(path)
+        self.transform = transform
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
+
         sample = self.data[idx]
 
-        board = sample["board"]
-        move = sample["move"]
+        board = torch.tensor(
+            sample["board"],
+            dtype=torch.float32
+        )
 
-        # Ensure tensors
-        board = torch.tensor(board, dtype=torch.float32)
-        move = torch.tensor(move, dtype=torch.long)
+        move = torch.tensor(
+            sample["move"],
+            dtype=torch.long
+        )
+
+        if self.transform:
+            board = self.transform(board)
 
         return board, move
